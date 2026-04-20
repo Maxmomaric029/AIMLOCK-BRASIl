@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Tabs · Botones Toggle · Glass</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background-color: #000000;
+      background-image: url('https://i.pinimg.com/736x/2c/8d/2e/2c8d2e7b7370d918fa2c99716b932155.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Corbel', 'Calibri', 'Segoe UI', Candara, sans-serif;
+      padding: 16px;
+    }
+
+    .glass-panel {
+      display: flex;
+      flex-direction: row;
+      max-width: 1100px;
+      width: 100%;
+      min-height: 580px;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 40px;
+      border: 1px solid rgba(255, 40, 40, 0.15);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
+      overflow: hidden;
+    }
+
+    /* ========== SIDEBAR ========== */
+    .sidebar-tabs {
+      width: 300px;
+      background: rgba(0, 0, 0, 0.15);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-right: 1px solid rgba(255, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+    }
+
+    .tab-item {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .tab-gif {
+      width: 100%;
+      padding: 0 14px;
+      margin-bottom: 6px;
+    }
+
+    .tab-gif img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 18px;
+      display: block;
+      border: 1px solid rgba(255, 0, 0, 0.2);
+      background: #0a0000;
+    }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      margin: 0 10px;
+      border-radius: 40px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: none;
+      border-left: 5px solid;
+      cursor: pointer;
+      transition: 0.2s ease;
+      color: #ffffff;
+      font-family: 'Corbel', 'Calibri', sans-serif;
+      font-weight: bold;
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .tab-btn i {
+      width: 24px;
+      height: 24px;
+      stroke-width: 2;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.3));
+    }
+
+    .tab-morado1 {
+      border-left-color: #9b30ff;
+    }
+    .tab-morado2 {
+      border-left-color: #b84dff;
+    }
+    .tab-rojo1 {
+      border-left-color: #e63946;
+    }
+    .tab-rojo2 {
+      border-left-color: #ff4d4d;
+    }
+
+    .tab-btn:hover {
+      background: rgba(30, 0, 0, 0.5);
+    }
+
+    .tab-btn.active {
+      background: rgba(150, 0, 0, 0.25);
+    }
+
+    .tab-item:not(:last-child) {
+      margin-bottom: 14px;
+    }
+
+    /* ========== MENÚ PRINCIPAL ========== */
+    .main-menu {
+      flex: 1;
+      padding: 28px 25px;
+      background: rgba(0, 0, 0, 0.08);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-block {
+      margin-bottom: 15px;
+    }
+
+    .main-title {
+      font-family: 'Calibri', 'Corbel', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .title-red {
+      color: #ff2a2a;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    }
+
+    .title-black {
+      color: #1a1a1a;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      -webkit-text-stroke: 0.5px #cc3333;
+    }
+
+    .hr-red {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ff3333, #660000, #ff3333, transparent);
+      width: 100%;
+      margin: 12px 0 20px;
+      border: 0;
+      opacity: 0.5;
+    }
+
+    /* CONTENEDOR DE PESTAÑAS DINÁMICAS */
+    .menu-options {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tab-pane.active-pane {
+      display: flex;
+    }
+
+    .menu-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      padding: 8px 0;
+      border-radius: 0;
+      border: none;
+    }
+
+    .menu-label {
+      font-family: 'Arial Black', Impact, 'Segoe UI Black', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-shadow: 0 1px 1px rgba(0,0,0,0.4);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* BOTONES TOGGLE */
+    .toggle-btn {
+      position: relative;
+      display: inline-block;
+      width: 90px;
+      height: 32px;
+    }
+
+    .toggle-btn-hidden {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-btn {
+      cursor: pointer;
+      background-color: #111111;
+      border-radius: 6px;
+      border: 1px solid #444;
+      outline: none;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      transition: 0.2s;
+      color: #777777;
+      font-family: 'Arial Black', Impact, sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+      overflow: hidden;
+    }
+
+    .toggle-btn::before {
+      content: "OFF";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.2s;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      content: "";
+      height: 22px;
+      width: 22px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #333333;
+      border-radius: 50%;
+      border: none;
+      outline: none;
+      transition: 0.2s;
+      pointer-events: none;
+      display: none;
+    }
+
+    .toggle-btn.active {
+      background-color: rgba(198, 40, 40, 0.15);
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+      border-color: #f44336;
+      color: #f44336;
+      text-shadow: 0 0 8px rgba(244, 67, 54, 0.6);
+    }
+
+    .toggle-btn.active::before {
+      content: "ON";
+    }
+
+    .toggle-btn.active .toggle-slider {
+      transform: translateX(26px);
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    .toggle-btn:focus {
+      outline: none;
+      border: none;
+    }
+
+    /* BOTÓN ABRIR FREE FIRE */
+    .launch-btn {
+      margin-top: 20px;
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 16px;
+      background: linear-gradient(90deg, #990000, #ff1a1a, #990000);
+      background-size: 200% auto;
+      color: white;
+      text-decoration: none;
+      font-family: 'Arial Black', Impact, sans-serif;
+      font-size: 1.3rem;
+      border-radius: 12px;
+      border: 1px solid #ff4444;
+      box-shadow: 0 5px 20px rgba(255, 0, 0, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: 0.4s;
+      cursor: pointer;
+    }
+
+    .launch-btn:hover {
+      background-position: right center;
+      box-shadow: 0 5px 25px rgba(255, 0, 0, 0.6);
+      transform: scale(1.02);
+    }
+
+    .footer-note {
+      margin-top: 25px;
+      display: flex;
+      justify-content: flex-end;
+      font-family: 'Calibri', sans-serif;
+      color: #cc4444;
+      font-size: 0.85rem;
+      gap: 18px;
+      opacity: 0.8;
+      text-shadow: none;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .glass-panel {
+        flex-direction: column;
+        min-height: auto;
+      }
+      .sidebar-tabs {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255,0,0,0.2);
+        padding: 14px 0;
+      }
+      .tab-gif img {
+        height: 100px;
+      }
+      .main-title {
+        font-size: 2.2rem;
+      }
+      .menu-label {
+        font-size: 0.95rem;
+      }
+      .launch-btn {
+        font-size: 1.1rem;
+        padding: 12px;
+      }
+    }
+
+    img {
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+<div class="glass-panel">
+  
+  <div class="sidebar-tabs">
+    
+    <div class="tab-item">
+      <div class="tab-gif">
+        <img src="https://i.pinimg.com/originals/b3/37/cf/b337cf84463a406bd151429503434d40.gif" alt="gif aimbot" loading="lazy">
+      </div>
+      <div class="tab-btn tab-rojo1 active" data-target="pane-aimbot">
+        <i data-lucide="target"></i>
+        <span>AIMBOT+</span>
+      </div>
+    </div>
+
+    <div class="tab-item">
+      <div class="tab-gif">
+        <img src="https://i.pinimg.com/originals/c8/7f/fb/c87ffbfdaade272b84e5a5f515c93436.gif" alt="gif sensi" loading="lazy">
+      </div>
+      <div class="tab-btn tab-morado2" data-target="pane-sensi">
+        <i data-lucide="mouse-pointer"></i>
+        <span>SENSI+</span>
+      </div>
+    </div>
+
+    <div class="tab-item">
+      <div class="tab-gif">
+        <img src="https://i.pinimg.com/originals/5d/57/4d/5d574d726a1673f33c8dc5038006f02f.gif" alt="gif lock" loading="lazy">
+      </div>
+      <div class="tab-btn tab-rojo2" data-target="pane-lock">
+        <i data-lucide="lock"></i>
+        <span>LOCK++</span>
+      </div>
+    </div>
+
+    <div class="tab-item">
+      <div class="tab-gif">
+        <img src="https://i.pinimg.com/originals/8b/ae/43/8bae43fae1416ee63a1e595b86da4dfb.gif" alt="gif config" loading="lazy">
+      </div>
+      <div class="tab-btn tab-morado1" data-target="pane-config">
+        <i data-lucide="settings"></i>
+        <span>CONFIG++</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="main-menu">
+    <div class="title-block">
+      <div class="main-title">
+        <span class="title-red">AIMLOCK</span><br>
+        <span class="title-black">BRASIL</span>
+      </div>
+    </div>
+    <hr class="hr-red">
+
+    <div class="menu-options">
+      <div id="pane-aimbot" class="tab-pane active-pane">
+        <div class="menu-row">
+          <span class="menu-label">🎯 AIMLOCK CABEZA 100%</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">💀 TODO ROJO ACTIVO</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔥 AIMBOT XITADO</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔥 AIMBOT BRASIL</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">👑 MODO DIOS</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="pane-sensi" class="tab-pane">
+        <div class="menu-row">
+          <span class="menu-label">⚡ SENSIBILIDAD XITADA</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🌀 GLOO 360</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">📉 SIN RECOIL TOTAL</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🎯 MIRA MAGNÉTICA</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🚀 VELOCIDAD TURBO</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="pane-lock" class="tab-pane">
+        <div class="menu-row">
+          <span class="menu-label">🔒 AIMLOCK CABEZA</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔒 AIMLOCK PECHO</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔒 AIMLOCK CUELLO</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔒 AIMLOCK PIERNA</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔒 AIMLOCK DISIMULADO</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+      </div>
+
+      <div id="pane-config" class="tab-pane">
+        <div class="menu-row">
+          <span class="menu-label">🌐 DNS BRASIL VIP</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🔇 SUPRESOR++ (SIN RECOIL)</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">🎯 DPI PLUS (PRECISIÓN)</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">⚙️ PROCESADOR GRÁFICO++</span>
+          <button class="toggle-btn" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+        <div class="menu-row">
+          <span class="menu-label">📂 SENSI EN JUEGO++</span>
+          <button class="toggle-btn active" type="button" onclick="this.classList.toggle('active')">
+            <span class="toggle-slider"></span><span class="toggle-btn-hidden"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <a href="freefire://" class="launch-btn">ABRIR FREE FIRE</a>
+
+    <div class="footer-note">
+      <span>💀 TODO ROJO</span>
+      <span>OB53 ACTIVO ✅</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  lucide.createIcons();
+  
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panes = document.querySelectorAll('.tab-pane');
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      // Remover activos de tabs
+      tabs.forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      // Remover activos de paneles y mostrar el seleccionado sin borrar el JS anterior
+      const target = this.getAttribute('data-target');
+      panes.forEach(p => p.classList.remove('active-pane'));
+      document.getElementById(target).classList.add('active-pane');
+    });
+  });
+</script>
+</body>
+</html>
